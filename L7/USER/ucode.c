@@ -138,3 +138,15 @@ int putc(char c)
 {
 	return syscall(91,c,0,0);
 }
+
+
+int getppid()
+{
+	return syscall(80,0,0);
+}
+
+
+int gettime()
+{
+	return syscall(81,0,0);
+}

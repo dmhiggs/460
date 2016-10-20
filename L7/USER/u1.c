@@ -4,6 +4,7 @@ int color;
 main(int argc, char *argv[])
 { 
   char name[64]; int pid, ppid, cmd, segment, i, j;
+	long waittime = 999999;
  
 	//get its pid and ppid
 
@@ -12,28 +13,19 @@ main(int argc, char *argv[])
        color = 0x000B + (pid % 5);
        segment = (pid+1)*0x1000;   
        printf("==============================================\n");
-       printf("I am proc %din U mode: segment=%x\n", pid, segment);
+       printf("I am proc %din U mode: segment=%x, ppid=%d\b\n", pid, segment, getppid());
        show_menu();
-       printf("Command ? ");
-       gets(name); 
-       if (name[0]==0) 
-           continue;
-
+       //printf("Command ? ");
+       //gets(name); 
+       //if (name[0]==0) 
+           //continue;
 
 	//print its pid and ppid
+	printf("proc %d\b time left: %d\b, parent: %d\b\n", pid, gettime(), getppid());
+
 	while(1)
 	{
-		//when proc is scheduled to run, set its PROC.time to a time slice value -- like 5 seconds
-
-
-		//per second, decrement running's time in Umode only
-
-
-		//when PROC's time expires, switch process
-			//do NOT switch process while in Kmode
-				//MTX kernel NOT multi-processor kernel
-
-
+		//this should be empty?
 	}
 
 
