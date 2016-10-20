@@ -18,7 +18,6 @@ typedef struct proc{
     int    *ksp;
     int    uss, usp;
     int    inkmode;            // added for interrupt processing
-
     int    pid;                // add pid for identify the proc
     int    status;             // status = FREE|READY|RUNNING|SLEEP|ZOMBIE    
     int    ppid;               // parent pid
@@ -27,7 +26,7 @@ typedef struct proc{
     int    event;
     int    exitCode;
     char   name[32];
+	int time;
     int    kstack[SSIZE];      // per proc stack area
 
-	int time;
 }PROC;

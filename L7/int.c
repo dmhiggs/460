@@ -31,6 +31,9 @@ int kcinth()
        case 7 : r = fork();           break;
        case 8 : r = exec(b);          break;
        
+	case 80: r = running->ppid;	break;
+	case 81: r = running->time;	break;
+
        case 90: r =  getc();          break;
        case 91: color=running->pid+11;
                 r =  putc(b);         break;       

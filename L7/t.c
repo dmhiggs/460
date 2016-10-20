@@ -34,7 +34,7 @@ int init()
         strcpy(proc[i].name, pname[i]);
         p->inkmode = 1;   
         p->next = &proc[i+1];
-	p->time = -1;
+	p->time = 5;
     }
     freeList = &proc[0];      // all procs are in freeList
     proc[NPROC-1].next = 0;
@@ -59,6 +59,7 @@ int scheduler()
     }
     running = dequeue(&readyQueue);
     running->status = RUNNING;
+	goUmode();
 }
 
 int int80h(), tinth();

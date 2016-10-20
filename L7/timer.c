@@ -42,7 +42,6 @@ int timer_init()
  *===================================================================*/
 int thandler()
 {
-	PROC *p;
 	int i, r = row, c = col, prev = 0;
 
 	
@@ -70,38 +69,6 @@ int thandler()
 	if (h1 > 0 && (h1%=10) == 0) h10++;
 	if (h10 == 10) h10 = 0;
 
-
-	clear_time();	
-
-
-	//if in usermode...do things...
-		if (p->inkmode)
-		{
-
-		}
-		//when proc is scheduled to run, set its PROC.time to a time slice value -- like 5 seconds
-
-
-		//per second, decrement running's time in Umode only
-		if (p->time>0)
-		{
-
-		}
-
-		//when PROC's time expires, switch process
-			//do NOT switch process while in Kmode
-				//MTX kernel NOT multi-processor kernel
-		if (p->time==0)
-		{
-
-		}
-
-
-/*
-      printf("1 second timer interrupt in ");
-      running->inkmode > 1 ? putc('K') : putc('U');
-      printf("mode\n");
-*/
   }
 
 	//HH:MM:SS in lower right corner
@@ -114,4 +81,28 @@ int thandler()
 	//clear_time();
 
   out_byte(0x20, 0x20);                // tell 8259 PIC EOI
+
+//if in usermode...do things...
+	if (tick == 0 && running->inkmode==1)
+	{
+		//per second, decrement running's time in Umode only
+		if (running->time>0)
+		{
+			running->time--;
+
+			printf("proc %d\b time left: %d\b, parent: %d\b\n", running->pid, running->time, running->ppid);
+		}
+
+		//when PROC's time expires, switch process
+			//do NOT switch process while in Kmode
+				//MTX kernel NOT multi-processor kernel
+		if (running->time==0)
+		{
+			printf("\n");
+			running->time = 5;
+			tswitch();
+			//goUmode();
+		}
+	}
+
 }

@@ -43,6 +43,8 @@ int vid_init()
 int scroll()
 {
 	u16 i, w, bytes;
+
+	clear_time();
 	
 	//test offset = org + ONE screen + ONE more line
 	offset = org + SCR_BYTES + 2*LINE_WIDTH;
@@ -187,7 +189,7 @@ int clear_time()
 {
 	int i,j,r = row,c=col;
 
-	for (i = 0; i<24; i++)
+	for (i = 23; i<=24; i++)
 	{
 		for (j = 70; j<79; j++)
 		{
