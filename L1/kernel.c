@@ -7,7 +7,7 @@
 extern int goUmode();
 PROC *kfork();
 
-int makeUmiage(char *filename, PROC *p)
+int makeUimage(char *filename, PROC *p)
 {
 	u16 i, segment;
 	segment = (p->pid +1)*0x1000;
@@ -36,73 +36,40 @@ int makeUmiage(char *filename, PROC *p)
 
 PROC *kfork(char *filename)
 {
+  PROC *p;
+  int  i, child;
+  u16  segment;
+
+  /*** get a PROC for child process: ***/
+  if ( (p = get_proc(&freeList)) == 0){
+       printf("no more proc\n");
+       return 0;
+  }
+  /* initialize the new proc and its stack */
+  p->status = READY;
+  p->ppid = running->pid;
+  p->parent = running;
+  p->priority  = 1;                 // all of the same priority 1
+
+  // clear all SAVed registers on stack
+  for (i=1; i<10; i++)
+      p->kstack[SSIZE-i] = 0;
  
-int count;
-u16 segment;
+  // fill in resume address
+  p->kstack[SSIZE-1] = (int)body;
+  // save stack TOP address in PROC
+  p->ksp = &(p->kstack[SSIZE - 9]);
 
-PROC *p = get_proc(&freeList);
-
-if (!p){
-	printf("freelist null\n");
-	return 0;
-	}
-
-p->ppid = running->pid;
-p->parent = running;
-p->status = READY;
-p->priority = 1;
-
-for(count=1; count<10; count++){
-	p->kstack[SSIZE-count] = 0;
-	}
-
-p->kstack[SSIZE - 1] = (int)body;
-p->ksp = &(p->kstack[SSIZE-9]);
-enqueue(&readyQueue, p);
-
-segment = (p->pid +1)*0x1000;
-
-
-
-//all the parts...? of the segment...
-//increment by 2, flag ucs upc ax bx cx dx bp si di ues uds
-
-put_word(0x0200, segment, -2); //flag
-put_word(segment, segment, -4); //user? code segment
-put_word(0, segment, -6); //user program count
-put_word(0, segment, -8); //register a
-put_word(0, segment, -10); //register b
-put_word(0, segment, -12); //register c
-put_word(0, segment, -14); //register d
-put_word(0, segment, -16); //bp
-put_word(0, segment, -18); //si
-put_word(0, segment, -20); //di
-put_word(segment, segment, -22); //ues
-put_word(segment, segment, -24); //uds
-
-p->uss = segment;
-p->usp = -24;
-
-
-
-
-
-
-
-
-if (filename)
-{
-	load(filename, segment);
-}
-
-
-
-
-
-
-
-return p;
-
+  enqueue(&readyQueue, p);
+  nproc++;
+  if (filename){
+    /******** create Umode image *******************/
+    segment = 0x1000*(p->pid+1);
+    makeUimage("/bin/u1", p);
+  }
+  printf("Proc %d kforked a child %d at segment=%x\n",
+          running->pid, p->pid, segment);
+  return p;
 }
 
 
@@ -130,6 +97,8 @@ while(1){
 		case 'w': do_kwait();
 			break;
 		case 'u': goUmode();
+			break;
+		case 'q': do_exit();
 			break;
 		}
 	}
@@ -194,8 +163,18 @@ printf("free zombie %d with code %d\n", wait, status);
 
 int do_exit()
 {
-kexit(0);
+int exitValue;
 
+  if (running->pid == 1 && nproc > 2){
+      printf("other procs still exist, P1 can't die yet !%c\n",007);
+      return -1;
+  }
+
+  printf("enter an exitValue (0-9) : ");
+  exitValue = (getc()&0x7F) - '0'; 
+  printf("%d\n", exitValue);
+
+  kexit(exitValue);
 }
 
 int kexit(int exitValue)
@@ -223,7 +202,7 @@ running->exitCode = exitValue;
 running->status = ZOMBIE;
 
 
-kwakeup(&proc[running->ppid]);
+kwakeup(running->parent);
 
 if (wakeupP1){
 	kwakeup(&proc[1]);
@@ -249,7 +228,7 @@ printf("......other procs........\n");
 
 
 while(count<9){
-	printf("proc[%d] = %s", count, (&proc[count])->name);
+	printf("proc[%d] = %s, status = %d, pid = %d, ppid = %d\n", count, (&proc[count])->name, (&proc[count])->status, (&proc[count])->pid, (&proc[count])->ppid);
 	count++;
 	}
 
@@ -272,19 +251,19 @@ int kchname(char *name)
 	//get_byte(running->uss, value)
 int i=0;
 char c;
-char *newname[32];
+char newname[32];
 c = get_byte(running->uss, *name);
 
 while (c!='\0' && i<32)
 {	
-	c = get_byte(running->uss, *name + i);
+	c = get_byte(running->uss, name + i);
 	newname[i] = c;
 	i++;
 }
 //return byte into a character
 //increment value and place in string until returned byte is null or until 32 characters bc max length is 32
 //string copy new name into old name
-strcpy(name, newname);
+strcpy(running->name, newname);
 }
 
 
@@ -310,12 +289,14 @@ int kkfork()
 //5. return child proc pointer
 
 	PROC *p = kfork("/bin/u1");
+	if (p==0)
+		return -1;
 	return (p->pid);
 }
 
 int ktswitch()
 {
-    return tswitch();
+    tswitch();
 }
 
 int kkwait(int *ustatus)
@@ -340,4 +321,23 @@ int kkexit(int value)
 
 	kexit(value);
 	return value;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+int kmode()
+{
+  body();
 }

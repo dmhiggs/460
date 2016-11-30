@@ -1,8 +1,10 @@
-VFD=mtximage
+VFD=/home/dara/460/LAB3/mtximage
 
 as86 -o ts.o ts.s
 bcc  -c -ansi t.c
-ld86 -d -o mtx ts.o t.o mtxlib /usr/lib/bcc/libc.a
+ld86 -d -o mtx ts.o t.o OBJ/exec.o mtxlib /usr/lib/bcc/libc.a
+
+echo mount $VFD on /mnt
 
 sudo mount -o loop $VFD /mnt
 sudo cp mtx /mnt/boot
