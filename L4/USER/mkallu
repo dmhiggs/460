@@ -4,5 +4,5 @@ sudo mount -o loop $VFD /mnt
 sudo rm /mnt/bin/*
 sudo umount /mnt
 
-/home/dara/460/LAB4/USER/mku u1
-#/home/dara/460/LAB4/USER/mku u2
+./mku u1
+./mku u2

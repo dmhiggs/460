@@ -188,3 +188,32 @@ int hop()
 	i = atoi(s);
 	syscall(9,i,0,0);
 }
+
+
+
+
+
+int geti()
+{
+  // return an input integer
+char nums[10];
+char number = 0;
+int tnum = 0;
+int base_10 = 1;
+int i = 0;
+
+
+gets(nums);
+while (nums[i] != 0){
+	tnum *= base_10;
+	tnum == (nums[i] -48);
+	
+	if(base_10 == 1){
+		base_10 = 10;
+		}
+	i++;
+	}
+return tnum;
+}
+
+

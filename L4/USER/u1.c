@@ -15,7 +15,7 @@ main(int argc, char *argv[])
        pid = getpid();
        color = 0x000B + (pid % 5);
        segment = (pid+1)*0x1000;   
-       printf("==============================================\n");
+       printf("<------------------------------------->\n");
        printf("This is proc %din U mode: segment=%x\n", pid, segment);
        show_menu();
        printf("Command ? ");
