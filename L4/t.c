@@ -84,7 +84,7 @@ int scheduler()
 
     if (running->status == RUNNING){
 	running->status = READY;
-        enqueue(&readyQueue, RUNNING);
+        enqueue(&readyQueue, running);
 	}
 
      running = dequeue(&readyQueue);
@@ -118,7 +118,7 @@ main()
 	}
 
       while(!readyQueue);
-      printf("P0 switch process\n");
+      printf("P0 switch process :C :C :C :C sadness\n");
       tswitch();         // P0 switch to run P1
    }
 }

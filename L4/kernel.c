@@ -243,12 +243,56 @@ int do_kwait(int *ustatus)
 
 int do_exit()
 {
-	kexit(0);
+int exitValue;
+
+  if (running->pid == 1 && nproc > 2){
+      printf("other procs still exist, P1 can't die yet !%c\n",007);
+      return -1;
+  }
+
+  printf("enter an exitValue (0-9) : ");
+  exitValue = (getc()&0x7F) - '0'; 
+  printf("%d\n", exitValue);
+
+  kexit(exitValue);
 }
 
+/*
+int kexit(int exitValue)
+{
+
+int i, wakeupP1 = 0;
+PROC *p;
 
 
+if (running->pid == 1 && get_nproc()>2){
+	printf("other procs, p1 can't die\n");
+	return -1;
+	}
 
+for (i = 1; i < NPROC; i++){
+	p = &proc[i];
+	if (p->status != FREE && p->ppid == running->pid){
+		p->ppid = 1;
+		p->parent = &proc[1];
+		wakeupP1++;
+		}
+	}
+
+running->exitCode = exitValue;
+running->status = ZOMBIE;
+
+
+kwakeup(running->parent);
+
+if (wakeupP1){
+	kwakeup(&proc[1]);
+	}
+
+tswitch();
+
+}
+*/
 
 
 
@@ -266,7 +310,7 @@ printf("......other procs........\n");
 
 
 while(count<9){
-	printf("proc[%d] = %s", count, (&proc[count])->name);
+	printf("proc[%d] = %s, status = %d, pid = %d, ppid = %d\n", count, (&proc[count])->name, (&proc[count])->status, (&proc[count])->pid, (&proc[count])->ppid);
 	count++;
 	}
 
@@ -289,21 +333,21 @@ int kchname(char *name)
 	//get_byte(running->uss, value)
 int i=0;
 char c;
-char *newname[32];
+char newname[32];
 c = get_byte(running->uss, *name);
 
 while (c!='\0' && i<32)
 {	
-	c = get_byte(running->uss, *name + i);
+	c = get_byte(running->uss, name + i);
 	newname[i] = c;
 	i++;
 }
 
-newname[31]='\0';
+//newname[31]='\0';
 //return byte into a character
 //increment value and place in string until returned byte is null or until 32 characters bc max length is 32
 //string copy new name into old name
-strcpy(name, newname);
+strcpy(running->name, newname);
 }
 
 
@@ -336,12 +380,14 @@ int kkfork()
 //5. return child proc pointer
 
 	PROC *p = kfork("/bin/u1");
+	if (p==0)
+		return -1;
 	return (p->pid);
 }
 
 int ktswitch()
 {
-    return tswitch();
+    tswitch();
 }
 
 int kkwait(int *ustatus)

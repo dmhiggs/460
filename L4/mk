@@ -9,7 +9,7 @@ sudo cp mtx /mnt/boot
 sudo umount /mnt
 sudo rm mtx
 
-(cd USER; /home/dara/460/LAB4/USER/mkallu)
+(cd USER; ./mkallu)
 
 echo done
 
