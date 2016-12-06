@@ -1,0 +1,9 @@
+pages that might be good for reference later:
+
+	FUNCTION/FILE	PAGE
+	open()		332
+	close()		333
+	sh.c		365/366
+	login.c		363
+	init.c		362
+	

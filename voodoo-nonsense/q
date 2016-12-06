@@ -1,0 +1,11 @@
+#./mku cp
+#./mku more
+./mku init
+./mku login
+#./mku sh
+#./mku l2u
+#./mku cat
+
+rm *.o
+
+qemu-system-x86_64 -hda vdisk -m 520M -smp $1 -serial /dev/pts/2 -localtime
