@@ -122,7 +122,7 @@ typedef struct semaphore{
 #define NPIPE             10
 #define PSIZE            256
 
-// UNIX <fcntl.h> constants: <asm/fcntl.h> in Linux
+/*// UNIX <fcntl.h> constants: <asm/fcntl.h> in Linux*/
 #define O_RDONLY	     00
 #define O_WRONLY	     01
 #define O_RDWR		     02
@@ -162,7 +162,7 @@ typedef struct Minode{
   int      dirty;
   int      mounted;
   struct Mount *mountptr;
-  struct semaphore lock;  // locking semaphore
+  struct semaphore lock;  /*//// locking semaphore*/
 } MINODE;
 
 
@@ -173,8 +173,8 @@ typedef struct Mount{
         struct Minode *mounted_inode;
         char   name[32]; 
         char   mount_name[32];
-        // mounted dev's map & inodes_block numbers
-        // although all EXT2 FS, these values may be different PER device
+        /*// mounted dev's map & inodes_block numbers
+        // although all EXT2 FS, these values may be different PER device*/
         int    BMAP,IMAP,IBLOCK; 
 } MOUNT;
 
@@ -196,8 +196,8 @@ typedef struct stat {
   ushort st_rdev;
   long   st_size;		/* file size */
   long   st_atime;		/* time of last access */
-  long   st_mtime;		// time of last modification
-  long   st_ctime;		// time of creation
+  long   st_mtime;		/*// time of last modification*/
+  long   st_ctime;		/*// time of creation*/
   long   st_dtime;
   long   st_date;
   long   st_time;
@@ -244,18 +244,18 @@ typedef struct pres{
 
    u16  segment, tsize, dsize, size;
 
-   MINODE *cwd;              // CWD 
+   MINODE *cwd;              /*// CWD */
    char    name[32];
 
-   char    tty[16];          // opened /dev/ttyXX
-   int     tcount;           // process tcount
-   u16     signal;           // 15 signals=bits 1 to 14   
-   u16     sig[NSIG];        // 15 signal handlers
-   OFT     *fd[NFD];         // open file descriptors
+   char    tty[16];          /*// opened /dev/ttyXX*/
+   int     tcount;           /*// process tcount*/
+   u16     signal;           /*// 15 signals=bits 1 to 14   */
+   u16     sig[NSIG];        /*// 15 signal handlers*/
+   OFT     *fd[NFD];         /*// open file descriptors*/
 
-   struct semaphore mlock;   // messageQ lock
-   struct semaphore message; // # of messages in mqueue
-   struct mbuf      *mqueue; // message queue
+   struct semaphore mlock;   /*// messageQ lock*/
+   struct semaphore message; /*// # of messages in mqueue*/
+   struct mbuf      *mqueue; /*// message queue*/
 } PRES;
 
 typedef struct proc{
@@ -277,13 +277,13 @@ typedef struct proc{
         int     vforked;
 
         int     time;
-        int     cpu;           // CPU time ticks used in ONE second
-        int     type;          // PROCESS|THREAD
+        int     cpu;           /*// CPU time ticks used in ONE second*/
+        int     type;          /*// PROCESS|THREAD*/
  
   struct proc  *parent;
-  struct proc  *proc;          // process ptr
-  struct pres  *res;           // resource struct ptr
-  struct semaphore *sem;       // ptr to semaphore currently BLOCKed on
+  struct proc  *proc;          /*// process ptr*/
+  struct pres  *res;           /*// resource struct ptr*/
+  struct semaphore *sem;       /*// ptr to semaphore currently BLOCKed on*/
 
   int kstack[SSIZE];
 }PROC;        
@@ -294,7 +294,7 @@ typedef struct proc{
 #define SUPER_MAGIC       0xEF53
 #define SUPER_USER        0
 
-// dev number of FD and HD; use their major device #
+/*// dev number of FD and HD; use their major device #*/
 #define FD  2
 
 struct devtab{
@@ -309,7 +309,7 @@ struct hd {
   ushort   opcode;		
   ushort   drive;	
   ulong    start_sector;
-  ulong    size;               // size in number of sectors
+  ulong    size;               /*// size in number of sectors*/
 };
 
 struct floppy {		/* drive struct, one per drive */
@@ -330,24 +330,24 @@ struct floppy {		/* drive struct, one per drive */
 struct buf{
   struct buf *next_free;
   struct buf *next_dev;
-  int opcode;             // READ | WRITE
+  int opcode;             /*// READ | WRITE*/
   int dev,blk;
 
   /********* these status variables could be changed to bits **********/  
   int dirty;
   int busy;
-  int async;              //ASYNC write flag
-  int valid;              // data valid
+  int async;              /*//ASYNC write flag*/
+  int valid;              /*// data valid*/
   int wanted;
 
   struct semaphore lock;
 
   struct semaphore iodone;
 
-  char buf[1024];         // data area
+  char buf[1024];         /*// data area*/
 };
 
-typedef struct ps{ // 8+16=24 bytes for ps syscall
+typedef struct ps{ /*// 8+16=24 bytes for ps syscall*/
   u16 pid,ppid,uid,status;
   char pgm[16];
 }PS;

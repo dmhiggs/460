@@ -1,4 +1,9 @@
 #include "type.h"
+//#include "l2u.c"
+//#include "more.c"
+//#include "grep.c"
+//#include "cp.c"
+//#include "cat.c"
 
 int pid;
 char line[64], pathname[32], i2[32], i3[32];

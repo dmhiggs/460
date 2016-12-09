@@ -3,7 +3,8 @@
 
 #include "ucode.c"
 int in, out, err, fd, r;
-char *tty, *ttyS0, *ttyS1;
+char *tty;
+char ttyS0[10], ttyS1[10];
 
 char buf[1024], user[64], password[64];
 char line[64], *lines[8];
@@ -11,27 +12,38 @@ char line[64], *lines[8];
 main(int argc, char * argv[])
 {
 	int i = 0, j = 0, n = 0, m = 0, uid, gid;
-	char *cp;
+	char *cp, *t, *tt;
+	char *c;
 
-	tty = argv[1];
-	ttyS0 = "/dev/ttyS0";
-	ttyS1 = "/dev/ttyS1";
+	//tty = argv[1];
+	strcpy(ttyS0,"/dev/ttyS0");
+	strcpy(ttyS1,"/dev/ttyS1");
+	t = &ttyS0[0];
+	tt = &ttyS1[0];
 
+	printf("\nchoose 1-%s 2-%s 3-%s: ", argv[1], ttyS0, ttyS1);
+	c = getc();
+
+	if (c == '3') tty = tt;
+	else if (c == '2') tty = t;
+	else tty = argv[1];
+printf("%c-%s \n", c, tty);
+//getc();
 	//1. close file descriptors 0,1 inherited from INIT
 	close(0);
 	close(1);
 	close(2);
 
 	//2. open argv[1] 3 times as in(0), out(1), err(2)
-	in = open(argv[1], O_RDONLY);
-	out = open(argv[1], O_WRONLY);
-	err = open(argv[1], O_WRONLY);
+	in = open(tty, O_RDONLY);
+	out = open(tty, O_WRONLY);
+	err = open(tty, O_WRONLY);
 
 	//3. settty(argv[1]); //set tty name string in PROC.tty
 	settty(tty); //store tty string in PROC.tty[] for putf()
 
 	//NOW can use printf, which calls putc() to tty
-	printf("DARALOGIN : open %s as stdin, stdout, stderr\n", tty);
+	printf("\nDARALOGIN : open %s as stdin, stdout, stderr\n", tty);
 
 	signal(2,1);	//ignore Control-C interruts so that
 			//Control-C KILLS other procs on this tty but not the main sh
@@ -138,7 +150,7 @@ main(int argc, char * argv[])
 				chdir(lines[5], 0, 0);
 				close(fd);
 printf("worked\n");
-getc();
+//getc();
 				exec("sh");
 			}
 
