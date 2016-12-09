@@ -1,5 +1,5 @@
 #./mku cp
-#./mku more
+./mku more
 ./mku init
 ./mku login
 ./mku sh

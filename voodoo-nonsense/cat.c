@@ -44,7 +44,7 @@ int main(int argc, char *argv[])
 		{
 			if ((i = getc()) != EOF)
 			{
-				if (i == '\r') i = '\n';
+				if (i == '\r') putc('\n');
 				putc(i);
 			}
 			else
@@ -111,7 +111,12 @@ int main(int argc, char *argv[])
 				{
 					if ((i = getc()) != EOF)
 					{
-						if (i == '\r') i = '\n';
+						if (i == '\r') 
+							{
+								outbut[0] = '\n';
+								putc('\n');
+								write(f1, &outbut[0], 1);
+							}
 						outbut[0] = i;
 						putc(i);
 						write(f1, &outbut[0], 1);
@@ -131,13 +136,19 @@ int main(int argc, char *argv[])
 		}
 		else if (strcmp(argv[1], ">>") == 0)
 		{
-			if ((f1 = open(argv[2], O_WRONLY)) >= 0)
+			*cp = inbuf[0];
+			if ((f1 = open(argv[2], O_WRONLY|O_APPEND)) >= 0)
 			{
 				while (1)
 				{
 					if ((i = getc()) != EOF)
 					{
-						if (i == '\r') i = '\n';
+						if (i == '\r') 
+							{
+								outbut[0] = '\n';
+								putc('\n');
+								write(f1, &outbut[0], 1);
+							}
 						outbut[0] = i;
 						putc(i);
 						write(f1, &outbut[0], 1);
@@ -151,13 +162,18 @@ int main(int argc, char *argv[])
 
 				return 0;			
 			}
-			else if ((f1 = open(argv[2], O_CREAT)) >= 0)
+			else if ((f1 = open(argv[2], O_WRONLY|O_CREAT)) >= 0)
 			{
 				while (1)
 				{
 					if ((i = getc()) != EOF)
 					{
-						if (i == '\r') i = '\n';
+						if (i == '\r') 
+							{
+								outbut[0] = '\n';
+								putc('\n');
+								write(f1, &outbut[0], 1);
+							}
 						outbut[0] = i;
 						putc(i);
 						write(f1, &outbut[0], 1);
@@ -172,7 +188,7 @@ int main(int argc, char *argv[])
 				return 0;			
 			}
 
-			printf("file did not open\n");
+			printf("file did not open %d\n", f1);
 			return 1;
 		}
 		else if (strcmp(argv[1], "<") == 0) //write to screen...
@@ -195,10 +211,73 @@ int main(int argc, char *argv[])
 
 	else if (argc == 4) //2 files and an operator
 	{
+		//f1 > f2 --- read f1, write f1 into f2, f2 overwritten
+		//f1 >> f2 -- read f1, append f1 into f2
+		//f1 < f2 --- read f2, write f2 into f1, overwrite
+		if (strcmp(argv[2], ">") == 0)
+		{
+			f1 = open(argv[1], O_RDONLY);
+			f2 = open(argv[3], O_WRONLY);
 
-		//f1 > f2 --- write f1 into f2, f2 overwritten
-		//f1 >> f2 -- append f1 into f2
-		//f1 < f2 --- write f2 into f1, overwrite
+			if (f1 >= 0) i = read(f1, inbuf, 1027);
+			if (f2 >= 0 && f1 >= 0)
+			{
+			 	write(f2, inbuf, i);
 
+				putc('\n');
+
+				return 0;			
+			}
+
+			printf("files did not open\n");
+			return 1;
+		}
+		else if (strcmp(argv[2], ">>") == 0)
+		{
+			f1 = open(argv[1], O_RDONLY);
+			f2 = open(argv[3], O_WRONLY|O_APPEND);
+			if (f1 >= 0) i = read(f1, inbuf, 1027);
+			if (f1 >= 0 && f2 >= 0)
+			{
+				write(f2, inbuf, i);
+
+				//putc('s');
+
+				return 0;			
+			}
+			else if (f1 >= 0 && f2 < 0)
+			{
+				close(f2);
+				if ((f2 = open(argv[3], O_WRONLY|O_CREAT)) >= 0)
+				{
+					write(f2, inbuf, i);
+
+					putc('\n');
+
+					return 0;			
+				}
+
+				printf("file2 did not open \n");
+				return 1;
+			}
+
+			printf("file1 did not open %d\n", f1);
+			return 1;
+		}
+		else if (strcmp(argv[2], "<") == 0) //write to screen...
+		{
+			if (f1 = open(argv[3], O_RDONLY) >= 0) i = read(f1, inbuf, 1027);
+			//print file to screen
+			if (f1 >= 0 && (f2 = open(argv[1], O_WRONLY)) >= 0)
+			{
+				write(f2, inbuf, i);
+
+				putc('\n');
+
+				return 0;			
+			}
+			printf("file doesn't exist\n");
+			return 1;
+		}
 	}
 }
