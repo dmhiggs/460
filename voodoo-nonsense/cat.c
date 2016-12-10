@@ -53,7 +53,7 @@ int main(int argc, char *argv[])
 			}
 		}
 		putc('\n');
-		return 0;
+		exit(0);
 	}
 
 	else if (argc == 2) //one file
@@ -66,10 +66,10 @@ int main(int argc, char *argv[])
 			write(1, inbuf, i);
 			putc('\n');
 
-			return 0;
+			exit(0);
 		}
 		printf("file doesn't exist\n");
-		return 1;
+		exit(1);
 	}
 
 	else if (argc == 3) //possibly 2 files or 1 file & operator
@@ -94,11 +94,11 @@ int main(int argc, char *argv[])
 
 					//close(f2);
 
-					return 0;
+					exit(0);
 				}
 			}
 			printf("files doesn't exist\n");
-			return 1;
+			exit(1);
 		}
 		//operator & file -- >  puts input into file
 		//				  -- <  uses file as input for command, print to screen
@@ -128,11 +128,37 @@ int main(int argc, char *argv[])
 				}
 				putc('\n');
 
-				return 0;			
+				exit(0);			
+			}
+			else if ((f1 = open(argv[2], O_WRONLY|O_CREAT)) >= 0)
+			{
+				while (1)
+				{
+					if ((i = getc()) != EOF)
+					{
+						if (i == '\r') 
+							{
+								outbut[0] = '\n';
+								putc('\n');
+								write(f1, &outbut[0], 1);
+							}
+						outbut[0] = i;
+						putc(i);
+						write(f1, &outbut[0], 1);
+					}
+					else
+					{
+						break;
+					}
+				}
+				putc('\n');
+
+				exit(0);			
 			}
 
+
 			printf("file did not open\n");
-			return 1;
+			exit(1);
 		}
 		else if (strcmp(argv[1], ">>") == 0)
 		{
@@ -160,7 +186,7 @@ int main(int argc, char *argv[])
 				}
 				putc('\n');
 
-				return 0;			
+				exit(0);			
 			}
 			else if ((f1 = open(argv[2], O_WRONLY|O_CREAT)) >= 0)
 			{
@@ -185,11 +211,11 @@ int main(int argc, char *argv[])
 				}
 				putc('\n');
 
-				return 0;			
+				exit(0);			
 			}
 
 			printf("file did not open %d\n", f1);
-			return 1;
+			exit(1);
 		}
 		else if (strcmp(argv[1], "<") == 0) //write to screen...
 		{
@@ -202,10 +228,10 @@ int main(int argc, char *argv[])
 				write(1, inbuf, i);
 				putc('\n');
 
-				return 0;
+				exit(0);
 			}
 			printf("file doesn't exist\n");
-			return 1;
+			exit(1);
 		}
 	}
 
@@ -220,17 +246,34 @@ int main(int argc, char *argv[])
 			f2 = open(argv[3], O_WRONLY);
 
 			if (f1 >= 0) i = read(f1, inbuf, 1027);
+			else printf("file wouldn't read f1\n");
 			if (f2 >= 0 && f1 >= 0)
 			{
 			 	write(f2, inbuf, i);
 
 				putc('\n');
 
-				return 0;			
+				exit(0);			
+			}
+			else if (f1 >= 0 && f2 < 0)
+			{
+				close(f2);
+				if ((f2 = open(argv[3], O_WRONLY|O_CREAT)) >= 0)
+				{
+					write(f2, inbuf, i);
+
+					putc('\n');
+
+					exit(0);			
+				}
+
+				printf("file2 did not open \n");
+				exit(0);
 			}
 
+
 			printf("files did not open\n");
-			return 1;
+			exit(0);
 		}
 		else if (strcmp(argv[2], ">>") == 0)
 		{
@@ -243,7 +286,7 @@ int main(int argc, char *argv[])
 
 				//putc('s');
 
-				return 0;			
+				exit(0);			
 			}
 			else if (f1 >= 0 && f2 < 0)
 			{
@@ -254,15 +297,15 @@ int main(int argc, char *argv[])
 
 					putc('\n');
 
-					return 0;			
+					exit(0);			
 				}
 
 				printf("file2 did not open \n");
-				return 1;
+				exit(0);
 			}
 
 			printf("file1 did not open %d\n", f1);
-			return 1;
+			exit(0);
 		}
 		else if (strcmp(argv[2], "<") == 0) //write to screen...
 		{
@@ -274,10 +317,10 @@ int main(int argc, char *argv[])
 
 				putc('\n');
 
-				return 0;			
+				exit(0);			
 			}
 			printf("file doesn't exist\n");
-			return 1;
+			exit(0);
 		}
 	}
 }

@@ -10,7 +10,7 @@
 int main(int argc, char *argv[])
 {
 	int f1, f2, i = 0, j = 0;
-	char buffer[1028];
+	char buffer[1000000000028];
 	char c, *cp;
 
 	if (argc == 1) //????? apply to previous pipe file?
@@ -21,7 +21,7 @@ int main(int argc, char *argv[])
 	{
 		if ((f1 = open(argv[1], O_RDONLY)) >= 0)
 		{
-			f2 = read(f1, buffer, 1028);
+			f2 = read(f1, buffer, 1000000000028);
 
 			while (f2 > j)
 			{

@@ -14,22 +14,42 @@
 
 int main(int argc, char *argv[])
 {
+	int f1, f2;
+	char temp[128];
+
 	//must have 3 arguments
 	if (argc != 3)
 	{
 		printf("wrong amount of arguments\n");
-		return 1;
+		exit(0);
 	}
 
-	strcpy(argv[0], "cat ");
-	strcat(argv[0], argv[1]);
-	strcat(argv[0], " ");
-	strcat(argv[0], argv[2]);
+	f1 = open(argv[1], O_RDONLY);
+	f2 = open(argv[2], O_WRONLY);
+
+	if (f1 >= 0 && f2 >= 0)
+	{	
+		close(f1);
+		close(f2);
+		strcpy(temp, "cat ");
+		strcat(temp, argv[1]);
+		strcat(temp, " > ");
+		strcat(temp, argv[2]);
+	}
+	if (f1 >= 0 && f2 < 0)
+	{	
+		close(f1);
+		close(f2);
+		strcpy(temp, "cat ");
+		strcat(temp, argv[1]);
+		strcat(temp, " >> ");
+		strcat(temp, argv[2]);
+	}
 
 	//check for directory or file
 
 	//copy file1 to file2
-	exec(argv[0]);
+	exec(temp);
 
 	//copy file1 to directory
 	//cat file1 > directory/file1

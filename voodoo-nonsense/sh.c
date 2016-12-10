@@ -65,6 +65,7 @@ int hasPipe;
 //char *head, *tail;
 int lpd[2];
 
+
 int cmdmenu()
 {
 
@@ -354,21 +355,21 @@ int do_command(char *cmdLine)
 		if (tokens[i + 1] == 0)
 		{
 			printf("invalid command...< has no file to right\n");
-			return 1;
+			exit(1);
 		}
 		close(0); //close the reader...
 		//check if the file exists and open it...to read?
 		if (open(tokens[i + 1], 0) < 0) //think this means invalid
 		{
 			printf("invalid file...doesn't exist...\n");
-			return 1;
+			exit(1);
 		}
 	}
 	else if (i == index) //< exists but is first so is invalid
 	{
 		lai--;
 		printf("invalid command... < has no left side\n");
-		return 1;
+		exit(1);
 	}
 
 	i = -1;
@@ -381,31 +382,31 @@ int do_command(char *cmdLine)
 		if (tokens[i + 1] == 0)
 		{
 			printf("invalid command...> has no file to write to\n");
-			return 1;
+			exit(1);
 		}
 		close(1); //close writer....
 		//write or create...
-		if (open(tokens[i + 1], O_CREAT) >= 0) //file was able to be created...
+		if (open(tokens[i + 1], O_WRONLY|O_CREAT) >= 0) //file was able to be created...
 		{
 			close(1);
 			if (open(tokens[i + 1], O_WRONLY) < 0) //can't write for some reason
 			{
 				printf("> didn't write to new file\n");
-				return 1;
+				exit(1);
 			}
 		}
 		//close(1);
 		else if (open(tokens[i + 1], O_WRONLY) < 0) //file didn't write
 		{
 				printf("failed to write to file\n");
-				return 1;
+				exit(1);
 		}
 	}
 	else if (i == index) //< exists but is first so is invalid
 	{
 		ai--;
 		printf("invalid command... > has no left\n");
-		return 1;
+		exit(1);
 	}
 
 	i = -1;
@@ -417,33 +418,33 @@ int do_command(char *cmdLine)
 		if (tokens[i + 1] == 0)
 		{
 			printf("invalid command...>> has no file to write to\n");
-			return 1;
+			exit(1);
 		}
 		close(1);
 		//write, append, or create....apparently defined in type.h...
 		//O_WRONLY
 		//O_APPEND
 		//O_CREAT
-		if (open(tokens[i + 1], O_CREAT) >= 0) //was able to make file...
+		if (open(tokens[i + 1], O_WRONLY|O_CREAT) >= 0) //was able to make file...
 		{
 			close(1);
 			if (open(tokens[i + 1],O_WRONLY) < 0)//but couldn't write to it
 			{
 				printf("couldn't write to new file\n");
-				return 1;
+				exit(1);
 			}
 		}
-		else if (open(tokens[i + 1], O_APPEND) < 0)
+		else if (open(tokens[i + 1], O_WRONLY|O_APPEND) < 0)
 		{
 			printf("couldn't append to file\n");
-			return 1;
+			exit(1);
 		}
 	}
 	else if (i == 0) //> exists but is first so is invalid
 	{
 		aai--;
 		printf("invalid command... >> has no left\n");
-		return 1;
+		exit(1);
 	}
 //*/
 

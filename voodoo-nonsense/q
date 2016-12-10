@@ -1,10 +1,11 @@
-#./mku cp
+./mku cp
 ./mku more
 ./mku init
 ./mku login
 ./mku sh
 ./mku l2u
 ./mku cat
+./mku grep
 
 rm *.o
 

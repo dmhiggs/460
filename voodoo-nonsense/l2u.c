@@ -47,7 +47,7 @@ int main(int argc, char *argv[])
 
 		printf("\nUppercase string... \n%s\n", buffer);
 
-		return 1;
+		exit(1);
 	}
 
 	if (argc == 2)
@@ -61,7 +61,7 @@ int main(int argc, char *argv[])
 		//copy tempfile into f1
 		//remove tempfile
 		printf("%s %s: need 2 files\n", argv[0], argv[1]);
-		return 1;
+		exit(1);
 	}
 
 	if(argc == 3) //f1
@@ -96,7 +96,7 @@ int main(int argc, char *argv[])
 			//write to f2
 			//etc
 
-			return 0;
+			exit(0);
 		}
 	}
 }
